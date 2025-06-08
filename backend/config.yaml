@@ -1,0 +1,27 @@
+endpoints:
+  - name: My API
+    type: http
+    url: https://httpbin.org/status/200
+    
+    interval: 30  # giây
+    timeout: 5    # giây
+
+  - name: Redis TCP
+    type: tcp
+    host: 127.0.0.1
+    port: 6379
+    interval: 60
+    timeout: 3
+
+alerts:
+  telegram:
+    token: "<your_telegram_bot_token>"
+    chat_id: "<your_chat_id>"
+
+  email:
+    enabled: false
+    smtp_server: "smtp.example.com"
+    port: 587
+    username: "monitor@example.com"
+    password: "pass"
+    to: "admin@example.com"
