@@ -33,7 +33,7 @@ pipeline {
             steps {
                 unstash 'sources'
                 container(name: 'kaniko') {
-                    sh '/kaniko/executor --context=`pwd` --dockerfile=`pwd`/Dockerfile  --destination=binhha310/apimonitor:latest'
+                    sh '/kaniko/executor --context=`pwd` --dockerfile=`pwd`/Dockerfile.backend  --destination=binhha310/apimonitor:latest'
                 }
             }
         }
