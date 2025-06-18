@@ -1,3 +1,4 @@
+def gitUrlWithoutHttps
 pipeline {
     agent any
     options {
@@ -17,6 +18,13 @@ pipeline {
     }
 
     stages {
+        stage('Prepare Variables') {
+            steps {
+                script {
+                    gitUrlWithoutHttps = params.GIT_URL.replace('https://', '')
+                }
+            }
+        }
         stage('Checkout') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-creds-id', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
@@ -44,21 +52,18 @@ pipeline {
         }
         stage('Update GitOps Repo') {
             steps {
-                unstash 'sources'
-                withCredentials([usernamePassword(credentialsId: 'git-pat', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
-                    sh '''
+                withCredentials([usernamePassword(credentialsId: 'github-creds-id', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
+                    sh """
                         git config --global user.email "ci@example.com"
                         git config --global user.name "Jenkins CI"
 
-                        # Update image tag
-                        sed -i "s|tag:.*|tag: \\"$VERSION_TAG\\"|" ${BACKEND_CHART_PATH}/values.yaml
+                        sed -i "s|tag:.*|tag: \\"${VERSION_TAG}\\"|" ${BACKEND_CHART_PATH}/values.yaml
 
                         git add ${BACKEND_CHART_PATH}/values.yaml
-                        git commit -m "Update image tag to $VERSION_TAG"
+                        git commit -m "Update image tag to ${VERSION_TAG}"
 
-                        # Push using HTTPS + token auth
-                        git push https://${GIT_USER}:${GIT_TOKEN}@${params.GIT_URL.replace('https://', '')} HEAD:main
-                    '''
+                        git push https://${GIT_USER}:${GIT_TOKEN}@${gitUrlWithoutHttps} HEAD:main
+                    """
                 }
             }
         }
