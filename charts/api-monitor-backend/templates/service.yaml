@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "api-monitor-backend.fullname" . }}
+  labels:
+    {{- include "api-monitor-backend.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "api-monitor-backend.selectorLabels" . | nindent 4 }}
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 5000

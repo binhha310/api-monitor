@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "api-monitor-backend.fullname" . }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  labels:
+    {{- include "api-monitor-backend.labels" . | nindent 4 }}
+spec:
+  rules:
+    - host: apimonitor.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: api-monitor-backend
+                port:
+                  number: 80
+            pathType: Prefix
+            path: /
